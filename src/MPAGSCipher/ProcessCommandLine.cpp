@@ -1,10 +1,11 @@
 #include "ProcessCommandLine.hpp"
+#include "CipherMode.hpp"
 
 #include <iostream>
 #include <string>
 #include <vector>
 
-bool processCommandLine(const ProgramSettings& ps)
+bool processCommandLine(const std::vector<std::string>& cmdLineArgs ,const ProgramSettings& ps)
 {
     ProgramSettings p {ps};
     // Status flag to indicate whether or not the parsing was successful
@@ -12,17 +13,17 @@ bool processCommandLine(const ProgramSettings& ps)
 
     // Process the arguments - ignore zeroth element, as we know this to be
     // the program name and don't need to worry about it
-    const std::size_t nCmdLineArgs{p.cmdLineArgs.size()};
+    const std::size_t nCmdLineArgs{cmdLineArgs.size()};
     for (std::size_t i{1}; i < nCmdLineArgs; ++i) {
-        if (p.cmdLineArgs[i] == "-h" || p.cmdLineArgs[i] == "--help") {
+        if (cmdLineArgs[i] == "-h" || cmdLineArgs[i] == "--help") {
             // Set the indicator and terminate the loop
             p.helpRequested = true;
             break;
-        } else if (p.cmdLineArgs[i] == "--version") {
+        } else if (cmdLineArgs[i] == "--version") {
             // Set the indicator and terminate the loop
             p.versionRequested = true;
             break;
-        } else if (p.cmdLineArgs[i] == "-i") {
+        } else if (cmdLineArgs[i] == "-i") {
             // Handle input file option
             // Next element is filename unless "-i" is the last argument
             if (i == nCmdLineArgs - 1) {
@@ -33,10 +34,10 @@ bool processCommandLine(const ProgramSettings& ps)
                 break;
             } else {
                 // Got filename, so assign value and advance past it
-                p.inputFile = p.cmdLineArgs[i + 1];
+                p.inputFile = cmdLineArgs[i + 1];
                 ++i;
             }
-        } else if (p.cmdLineArgs[i] == "-o") {
+        } else if (cmdLineArgs[i] == "-o") {
             // Handle output file option
             // Next element is filename unless "-o" is the last argument
             if (i == nCmdLineArgs - 1) {
@@ -47,10 +48,10 @@ bool processCommandLine(const ProgramSettings& ps)
                 break;
             } else {
                 // Got filename, so assign value and advance past it
-                p.outputFile = p.cmdLineArgs[i + 1];
+                p.outputFile = cmdLineArgs[i + 1];
                 ++i;
             }
-        } else if (p.cmdLineArgs[i] == "-k") {
+        } else if (cmdLineArgs[i] == "-k") {
             // Handle cipher key option
             // Next element is the key unless -k is the last argument
             if (i == nCmdLineArgs - 1) {
@@ -61,17 +62,17 @@ bool processCommandLine(const ProgramSettings& ps)
                 break;
             } else {
                 // Got the key, so assign the value and advance past it
-                p.cipherKey = p.cmdLineArgs[i + 1];
+                p.cipherKey = cmdLineArgs[i + 1];
                 ++i;
             }
-        } else if (p.cmdLineArgs[i] == "--encrypt") {
-            p.encrypt = true;
-        } else if (p.cmdLineArgs[i] == "--decrypt") {
-            p.encrypt = false;
+        } else if (cmdLineArgs[i] == "--encrypt") {
+            p.encrypt = CipherMode::Encrypt;
+        } else if (cmdLineArgs[i] == "--decrypt") {
+            p.encrypt = CipherMode::Decrypt;
         } else {
             // Have encoutered an unknown flag, output an error message,
             // set the flag to indicate the error and terminate the loop
-            std::cerr << "[error] unknown argument '" << p.cmdLineArgs[i]
+            std::cerr << "[error] unknown argument '" << cmdLineArgs[i]
                       << "'\n";
             processStatus = false;
             break;
