@@ -22,9 +22,17 @@ int main(int argc, char* argv[])
     bool encrypt{true};
 
     // Process command line arguments
+    ProgramSettings ps {
+    cmdLineArgs,
+    helpRequested,
+    versionRequested,
+    inputFile, 
+    outputFile,
+    cipherKey,
+    encrypt
+};
     const bool cmdLineStatus{
-        processCommandLine(cmdLineArgs, helpRequested, versionRequested,
-                           inputFile, outputFile, cipherKey, encrypt)};
+        processCommandLine(ps)};
 
     // Any failure in the argument processing means we can't continue
     // Use a non-zero return value to indicate failure
